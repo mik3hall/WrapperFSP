@@ -19,6 +19,7 @@ import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Map;
 import java.util.Set;
+
 import us.hall.fsp.LoggingFSP;
 
 /**
@@ -51,9 +52,17 @@ public class WrapperFSP extends FileSystemProvider {
             try {
                 Class<?> c = Class
                     .forName(propValue, true, ClassLoader.getSystemClassLoader());
-                Constructor<?> ctor = c
-                    .getDeclaredConstructor(FileSystemProvider.class);
-                FileSystemProvider wrappedProvider = (FileSystemProvider)ctor.newInstance(fsp);
+            	Constructor<?>[] ctors = c.getDeclaredConstructors();
+            	Constructor<?> bestCtor = null;
+            	for (Constructor<?> ctor : ctors) {
+            		if (ctor.getParameterCount() > 0 || bestCtor == null)
+            			bestCtor = ctor;
+            	}
+                FileSystemProvider wrappedProvider;
+                if (bestCtor.getParameterCount() > 0)
+                	wrappedProvider = (FileSystemProvider)bestCtor.newInstance(fsp);
+                else 
+                	wrappedProvider = (FileSystemProvider)bestCtor.newInstance();
                 loggingProvider = new LoggingFSP(wrappedProvider);
             } catch (Exception x) {
                 throw new Error(x);
@@ -183,7 +192,7 @@ public class WrapperFSP extends FileSystemProvider {
     public DirectoryStream<Path> newDirectoryStream(
         Path path, Filter<? super Path> filter) throws IOException
     {	
-        return loggingProvider.newDirectoryStream(path,filter);
+        return new WrapperDirectoryStream(priorProvider.newDirectoryStream(path,filter));
     }
     
     @Override
