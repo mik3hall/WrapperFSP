@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================= -->
+<!-- Wrapper FSP project                                                     -->
+<!-- ======================================================================= -->
+
+<project name="loggingFSP" default="build" basedir=".">
+
+  <property name="src.dir" value="${basedir}/src"/>
+  <property name="build.dir" value="${basedir}/build"/>
+  <property name="build.classes.dir" value="${build.dir}/classes"/>
+  <property name="module.dir" value="${build.dir}/mods"/>
+     
+  <!-- =================================================================== -->
+  <!-- Prepares the build directory                                        -->
+  <!-- =================================================================== -->
+  <target name="prepare" depends="clean">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.classes.dir}"/>
+    <mkdir dir="${module.dir}"/>
+    <copy file="loggingFSP.jar" todir="${module.dir}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Compiles the source code                                            -->
+  <!-- =================================================================== -->
+  <target name="compile" depends="prepare">
+    <javac srcdir="${src.dir}"
+           destdir="${build.classes.dir}"
+           modulepath="${module.dir}"
+           optimize="on"
+           includes="**">
+    </javac>
+  </target>
+
+  <target name="build" depends="compile">
+      <jar jarfile="build/wrapperFSP.jar" includes="META-INF/services/**">
+      <fileset dir="${build.classes.dir}"/>
+     </jar>
+     <move file="build/wrapperFSP.jar" todir="${module.dir}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Command line run the code                                           -->
+  <!-- =================================================================== -->
+  	<!-- command line test attributes -->
+	<target name="run" description="Run OS/X Java 18 Test">
+		<exec failonerror="true"
+		      executable="/bin/sh" os="Mac OS X">
+		      <arg value="-c"/>
+		      <arg value="/usr/libexec/java_home -v 18 --exec java -Djava.nio.file.spi.DefaultFileSystemProvider=us.hall.fsp.wrap.WrapperFSP -DwrappedFSP=us.hall.trz.osx.MacFileSystemProvider -DlogParms=true -DlogReturn=true -cp macnio2.jar --module-path build/mods --add-modules wrapperFSP,loggingFSP --add-opens java.base/sun.nio.ch=loggingFSP -m loggingFSP/us.hall.fsp.Test"/>
+		</exec>
+	</target>
+  
+
+  <!-- =================================================================== -->
+  <!-- Cleans up generated stuff                                           -->
+  <!-- =================================================================== -->
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${module.dir}"/>
+  </target>
+</project>
+

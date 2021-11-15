@@ -1,6 +1,7 @@
 package us.hall.fsp.wrap;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.nio.channels.SeekableByteChannel;
@@ -24,7 +25,7 @@ import us.hall.fsp.LoggingFSP;
 
 /**
  * Wrapping file system provider
- * 
+ * x
  * @author mjh
  *
  */
@@ -192,7 +193,8 @@ public class WrapperFSP extends FileSystemProvider {
     public DirectoryStream<Path> newDirectoryStream(
         Path path, Filter<? super Path> filter) throws IOException
     {	
-        return new WrapperDirectoryStream(priorProvider.newDirectoryStream(path,filter));
+        //return new WrapperDirectoryStream(priorProvider.newDirectoryStream(path,filter));
+        return new WrapperDirectoryStream(loggingProvider.newDirectoryStream(path,filter));
     }
     
     @Override
@@ -219,6 +221,13 @@ public class WrapperFSP extends FileSystemProvider {
     { 
     	return loggingProvider.newFileSystem(uri,env);
     }
+ 
+    @Override
+    public InputStream newInputStream(Path path, OpenOption... options)
+            throws IOException
+        {
+    		return loggingProvider.newInputStream(path, options);	
+        }
     
     @Override
     public String getScheme() {   	

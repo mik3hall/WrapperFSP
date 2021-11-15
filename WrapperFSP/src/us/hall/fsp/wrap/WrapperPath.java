@@ -25,7 +25,7 @@ public class WrapperPath implements Path {
     /**
      * @return default FileSystem Path that proxy's pass through Path operations for us
      */
-    Path getProxy() { return proxy; }
+    public Path getProxy() { return proxy; }
     
     public WrapperPath getRoot() {
         if (this.isAbsolute()) 
