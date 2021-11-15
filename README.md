@@ -2,6 +2,12 @@
 
 WrappingFSP is a DefaultFileSystemProvider meant to wrap a given FileSystemProvider around a target one. 
 
+## Recent changes
+
+Changes to sync with LoggingFSP and give it a simple ant build.
+
+## Usage 
+
 Currently to wrap a logging FileSystemProvider around a target one. 
 
 The logging FileSystemProvider is a separate project [LoggingFSP](https://github.com/mik3hall/LoggingFSP). 
